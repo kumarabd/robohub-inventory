@@ -47,7 +47,7 @@ type Package struct {
 	
 	// License & Dependencies
 	License      string       `json:"license,omitempty"`
-	Dependencies []Dependency `gorm:"type:jsonb" json:"dependencies,omitempty"`
+	Dependencies Dependencies `gorm:"type:jsonb" json:"dependencies,omitempty"`
 	
 	// Timestamps
 	CreatedAt time.Time `json:"createdAt"`
@@ -79,6 +79,30 @@ type LastRun struct {
 type Dependency struct {
 	Name    string `json:"name"`
 	Version string `json:"version"`
+}
+
+// Dependencies is a custom type for JSONB array of dependencies
+type Dependencies []Dependency
+
+// Scan implements sql.Scanner interface for JSONB array
+func (d *Dependencies) Scan(value interface{}) error {
+	if value == nil {
+		*d = Dependencies{}
+		return nil
+	}
+	bytes, ok := value.([]byte)
+	if !ok {
+		return nil
+	}
+	return json.Unmarshal(bytes, d)
+}
+
+// Value implements driver.Valuer interface for JSONB array
+func (d Dependencies) Value() (driver.Value, error) {
+	if len(d) == 0 {
+		return nil, nil
+	}
+	return json.Marshal(d)
 }
 
 // Scan implements sql.Scanner interface for JSONB
@@ -130,23 +154,6 @@ func (l *LastRun) Scan(value interface{}) error {
 // Value implements driver.Valuer interface for JSONB
 func (l LastRun) Value() (driver.Value, error) {
 	return json.Marshal(l)
-}
-
-// Scan implements sql.Scanner interface for JSONB array
-func (d *[]Dependency) Scan(value interface{}) error {
-	if value == nil {
-		return nil
-	}
-	bytes, ok := value.([]byte)
-	if !ok {
-		return nil
-	}
-	return json.Unmarshal(bytes, d)
-}
-
-// Value implements driver.Valuer interface for JSONB array
-func (d []Dependency) Value() (driver.Value, error) {
-	return json.Marshal(d)
 }
 
 func (Package) TableName() string {

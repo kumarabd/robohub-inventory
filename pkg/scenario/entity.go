@@ -32,11 +32,11 @@ type Scenario struct {
 	
 	// Related Data
 	RecommendedDatasets []string        `gorm:"type:text[]" json:"recommendedDatasets"` // Dataset IDs
-	RequiredInputs      []RequiredInput `gorm:"type:jsonb" json:"requiredInputs"`
+	RequiredInputs      RequiredInputs  `gorm:"type:jsonb" json:"requiredInputs"`
 	
 	// Metrics
-	SuccessCriteria []SuccessCriterion `gorm:"type:jsonb" json:"successCriteria"`
-	PassDefinition  string             `gorm:"type:text" json:"passDefinition"`
+	SuccessCriteria SuccessCriteria `gorm:"type:jsonb" json:"successCriteria"`
+	PassDefinition  string          `gorm:"type:text" json:"passDefinition"`
 	
 	// Statistics
 	WeeklyRunCount      int     `gorm:"default:0" json:"weeklyRunCount"`
@@ -62,24 +62,13 @@ type RequiredInput struct {
 	Description string `json:"description"`
 }
 
-// SuccessCriterion represents a success criterion for the scenario
-type SuccessCriterion struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Threshold   string `json:"threshold"`
-	Unit        string `json:"unit"`
-}
-
-// Owner represents the scenario owner
-type Owner struct {
-	ID        string `json:"id"`
-	Name      string `json:"name"`
-	AvatarURL string `json:"avatarUrl,omitempty"`
-}
+// RequiredInputs is a custom type for JSONB array
+type RequiredInputs []RequiredInput
 
 // Scan implements sql.Scanner interface for JSONB array
-func (r *[]RequiredInput) Scan(value interface{}) error {
+func (r *RequiredInputs) Scan(value interface{}) error {
 	if value == nil {
+		*r = RequiredInputs{}
 		return nil
 	}
 	bytes, ok := value.([]byte)
@@ -90,13 +79,28 @@ func (r *[]RequiredInput) Scan(value interface{}) error {
 }
 
 // Value implements driver.Valuer interface for JSONB array
-func (r []RequiredInput) Value() (driver.Value, error) {
+func (r RequiredInputs) Value() (driver.Value, error) {
+	if len(r) == 0 {
+		return nil, nil
+	}
 	return json.Marshal(r)
 }
 
+// SuccessCriterion represents a success criterion for the scenario
+type SuccessCriterion struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Threshold   string `json:"threshold"`
+	Unit        string `json:"unit"`
+}
+
+// SuccessCriteria is a custom type for JSONB array
+type SuccessCriteria []SuccessCriterion
+
 // Scan implements sql.Scanner interface for JSONB array
-func (s *[]SuccessCriterion) Scan(value interface{}) error {
+func (s *SuccessCriteria) Scan(value interface{}) error {
 	if value == nil {
+		*s = SuccessCriteria{}
 		return nil
 	}
 	bytes, ok := value.([]byte)
@@ -107,8 +111,18 @@ func (s *[]SuccessCriterion) Scan(value interface{}) error {
 }
 
 // Value implements driver.Valuer interface for JSONB array
-func (s []SuccessCriterion) Value() (driver.Value, error) {
+func (s SuccessCriteria) Value() (driver.Value, error) {
+	if len(s) == 0 {
+		return nil, nil
+	}
 	return json.Marshal(s)
+}
+
+// Owner represents the scenario owner
+type Owner struct {
+	ID        string `json:"id"`
+	Name      string `json:"name"`
+	AvatarURL string `json:"avatarUrl,omitempty"`
 }
 
 // Scan implements sql.Scanner interface for JSONB
