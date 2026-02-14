@@ -1,35 +1,27 @@
-name: Docker Build and Publish
+name: Docker Build and Push
 
 on:
   push:
-    branches:
-      - main
-      - develop
-    tags:
-      - 'v*.*.*'
+    branches: [ "main" ]
   pull_request:
-    branches:
-      - main
-      - develop
+    branches: [ "main" ]
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  build-and-push:
+  build:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
       id-token: write
+      attestations: write
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -48,19 +40,11 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            # Tag with version for release tags (v1.2.3 -> 1.2.3)
-            type=semver,pattern={{version}}
-            # Tag with major.minor for release tags (v1.2.3 -> 1.2)
-            type=semver,pattern={{major}}.{{minor}}
-            # Tag with major for release tags (v1.2.3 -> 1)
-            type=semver,pattern={{major}}
-            # Tag with branch name
             type=ref,event=branch
-            # Tag with pr number for pull requests
             type=ref,event=pr
-            # Tag with git commit sha
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
             type=sha,prefix={{branch}}-
-            # Tag latest for main branch
             type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build and push Docker image
@@ -68,16 +52,12 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          build-args: |
-            VERSION=${{ steps.meta.outputs.version }}
-            COMMIT=${{ github.sha }}
-            BUILD_DATE=${{ steps.meta.outputs.created }}
 
       - name: Generate artifact attestation
         if: github.event_name != 'pull_request'
