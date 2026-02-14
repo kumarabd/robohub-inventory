@@ -35,14 +35,13 @@ func (h *PackageHandler) CreatePackage(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *PackageHandler) GetPackage(w http.ResponseWriter, r *http.Request) {
-	idStr := chi.URLParam(r, "id")
-	id, err := strconv.ParseUint(idStr, 10, 32)
-	if err != nil {
+	id := chi.URLParam(r, "id")
+	if id == "" {
 		http.Error(w, "Invalid ID", http.StatusBadRequest)
 		return
 	}
 
-	p, err := h.service.GetPackage(r.Context(), uint(id))
+	p, err := h.service.GetPackage(r.Context(), id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
@@ -71,9 +70,8 @@ func (h *PackageHandler) ListPackages(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *PackageHandler) UpdatePackage(w http.ResponseWriter, r *http.Request) {
-	idStr := chi.URLParam(r, "id")
-	id, err := strconv.ParseUint(idStr, 10, 32)
-	if err != nil {
+	id := chi.URLParam(r, "id")
+	if id == "" {
 		http.Error(w, "Invalid ID", http.StatusBadRequest)
 		return
 	}
@@ -84,7 +82,7 @@ func (h *PackageHandler) UpdatePackage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	p.ID = uint(id)
+	p.ID = id
 	if err := h.service.UpdatePackage(r.Context(), &p); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -95,14 +93,13 @@ func (h *PackageHandler) UpdatePackage(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *PackageHandler) DeletePackage(w http.ResponseWriter, r *http.Request) {
-	idStr := chi.URLParam(r, "id")
-	id, err := strconv.ParseUint(idStr, 10, 32)
-	if err != nil {
+	id := chi.URLParam(r, "id")
+	if id == "" {
 		http.Error(w, "Invalid ID", http.StatusBadRequest)
 		return
 	}
 
-	if err := h.service.DeletePackage(r.Context(), uint(id)); err != nil {
+	if err := h.service.DeletePackage(r.Context(), id); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

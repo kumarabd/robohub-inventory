@@ -26,7 +26,7 @@ func (s *Service) CreateSimulator(ctx context.Context, simulator *Simulator) err
 	return s.repo.Create(ctx, simulator)
 }
 
-func (s *Service) GetSimulator(ctx context.Context, id uint) (*Simulator, error) {
+func (s *Service) GetSimulator(ctx context.Context, id string) (*Simulator, error) {
 	simulator, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, ErrSimulatorNotFound
@@ -53,6 +53,6 @@ func (s *Service) UpdateSimulator(ctx context.Context, simulator *Simulator) err
 	return s.repo.Update(ctx, simulator)
 }
 
-func (s *Service) DeleteSimulator(ctx context.Context, id uint) error {
+func (s *Service) DeleteSimulator(ctx context.Context, id string) error {
 	return s.repo.Delete(ctx, id)
 }

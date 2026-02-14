@@ -26,7 +26,7 @@ func (s *Service) CreateDataset(ctx context.Context, dataset *Dataset) error {
 	return s.repo.Create(ctx, dataset)
 }
 
-func (s *Service) GetDataset(ctx context.Context, id uint) (*Dataset, error) {
+func (s *Service) GetDataset(ctx context.Context, id string) (*Dataset, error) {
 	dataset, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, ErrDatasetNotFound
@@ -53,6 +53,6 @@ func (s *Service) UpdateDataset(ctx context.Context, dataset *Dataset) error {
 	return s.repo.Update(ctx, dataset)
 }
 
-func (s *Service) DeleteDataset(ctx context.Context, id uint) error {
+func (s *Service) DeleteDataset(ctx context.Context, id string) error {
 	return s.repo.Delete(ctx, id)
 }

@@ -19,9 +19,9 @@ func (r *gormRepository) Create(ctx context.Context, repo *Repository) error {
 	return r.db.WithContext(ctx).Create(repo).Error
 }
 
-func (r *gormRepository) GetByID(ctx context.Context, id uint) (*Repository, error) {
+func (r *gormRepository) GetByID(ctx context.Context, id string) (*Repository, error) {
 	var repo Repository
-	err := r.db.WithContext(ctx).First(&repo, id).Error
+	err := r.db.WithContext(ctx).Where("id = ?", id).First(&repo).Error
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func (r *gormRepository) List(ctx context.Context, limit, offset int) ([]*Reposi
 	if offset > 0 {
 		query = query.Offset(offset)
 	}
-	err := query.Find(&repos).Error
+	err := query.Order("created_at DESC").Find(&repos).Error
 	return repos, err
 }
 
@@ -54,6 +54,6 @@ func (r *gormRepository) Update(ctx context.Context, repo *Repository) error {
 	return r.db.WithContext(ctx).Save(repo).Error
 }
 
-func (r *gormRepository) Delete(ctx context.Context, id uint) error {
-	return r.db.WithContext(ctx).Delete(&Repository{}, id).Error
+func (r *gormRepository) Delete(ctx context.Context, id string) error {
+	return r.db.WithContext(ctx).Where("id = ?", id).Delete(&Repository{}).Error
 }

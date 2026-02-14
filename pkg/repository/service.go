@@ -26,7 +26,7 @@ func (s *Service) CreateRepository(ctx context.Context, repo *Repository) error 
 	return s.repo.Create(ctx, repo)
 }
 
-func (s *Service) GetRepository(ctx context.Context, id uint) (*Repository, error) {
+func (s *Service) GetRepository(ctx context.Context, id string) (*Repository, error) {
 	repo, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, ErrRepositoryNotFound
@@ -53,6 +53,6 @@ func (s *Service) UpdateRepository(ctx context.Context, repo *Repository) error 
 	return s.repo.Update(ctx, repo)
 }
 
-func (s *Service) DeleteRepository(ctx context.Context, id uint) error {
+func (s *Service) DeleteRepository(ctx context.Context, id string) error {
 	return s.repo.Delete(ctx, id)
 }

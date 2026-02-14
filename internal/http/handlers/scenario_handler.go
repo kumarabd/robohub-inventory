@@ -35,14 +35,13 @@ func (h *ScenarioHandler) CreateScenario(w http.ResponseWriter, r *http.Request)
 }
 
 func (h *ScenarioHandler) GetScenario(w http.ResponseWriter, r *http.Request) {
-	idStr := chi.URLParam(r, "id")
-	id, err := strconv.ParseUint(idStr, 10, 32)
-	if err != nil {
+	id := chi.URLParam(r, "id")
+	if id == "" {
 		http.Error(w, "Invalid ID", http.StatusBadRequest)
 		return
 	}
 
-	s, err := h.service.GetScenario(r.Context(), uint(id))
+	s, err := h.service.GetScenario(r.Context(), id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
@@ -71,9 +70,8 @@ func (h *ScenarioHandler) ListScenarios(w http.ResponseWriter, r *http.Request) 
 }
 
 func (h *ScenarioHandler) UpdateScenario(w http.ResponseWriter, r *http.Request) {
-	idStr := chi.URLParam(r, "id")
-	id, err := strconv.ParseUint(idStr, 10, 32)
-	if err != nil {
+	id := chi.URLParam(r, "id")
+	if id == "" {
 		http.Error(w, "Invalid ID", http.StatusBadRequest)
 		return
 	}
@@ -84,7 +82,7 @@ func (h *ScenarioHandler) UpdateScenario(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	s.ID = uint(id)
+	s.ID = id
 	if err := h.service.UpdateScenario(r.Context(), &s); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -95,14 +93,13 @@ func (h *ScenarioHandler) UpdateScenario(w http.ResponseWriter, r *http.Request)
 }
 
 func (h *ScenarioHandler) DeleteScenario(w http.ResponseWriter, r *http.Request) {
-	idStr := chi.URLParam(r, "id")
-	id, err := strconv.ParseUint(idStr, 10, 32)
-	if err != nil {
+	id := chi.URLParam(r, "id")
+	if id == "" {
 		http.Error(w, "Invalid ID", http.StatusBadRequest)
 		return
 	}
 
-	if err := h.service.DeleteScenario(r.Context(), uint(id)); err != nil {
+	if err := h.service.DeleteScenario(r.Context(), id); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

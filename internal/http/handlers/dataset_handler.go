@@ -35,14 +35,13 @@ func (h *DatasetHandler) CreateDataset(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *DatasetHandler) GetDataset(w http.ResponseWriter, r *http.Request) {
-	idStr := chi.URLParam(r, "id")
-	id, err := strconv.ParseUint(idStr, 10, 32)
-	if err != nil {
+	id := chi.URLParam(r, "id")
+	if id == "" {
 		http.Error(w, "Invalid ID", http.StatusBadRequest)
 		return
 	}
 
-	d, err := h.service.GetDataset(r.Context(), uint(id))
+	d, err := h.service.GetDataset(r.Context(), id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
@@ -71,9 +70,8 @@ func (h *DatasetHandler) ListDatasets(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *DatasetHandler) UpdateDataset(w http.ResponseWriter, r *http.Request) {
-	idStr := chi.URLParam(r, "id")
-	id, err := strconv.ParseUint(idStr, 10, 32)
-	if err != nil {
+	id := chi.URLParam(r, "id")
+	if id == "" {
 		http.Error(w, "Invalid ID", http.StatusBadRequest)
 		return
 	}
@@ -84,7 +82,7 @@ func (h *DatasetHandler) UpdateDataset(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	d.ID = uint(id)
+	d.ID = id
 	if err := h.service.UpdateDataset(r.Context(), &d); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -95,14 +93,13 @@ func (h *DatasetHandler) UpdateDataset(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *DatasetHandler) DeleteDataset(w http.ResponseWriter, r *http.Request) {
-	idStr := chi.URLParam(r, "id")
-	id, err := strconv.ParseUint(idStr, 10, 32)
-	if err != nil {
+	id := chi.URLParam(r, "id")
+	if id == "" {
 		http.Error(w, "Invalid ID", http.StatusBadRequest)
 		return
 	}
 
-	if err := h.service.DeleteDataset(r.Context(), uint(id)); err != nil {
+	if err := h.service.DeleteDataset(r.Context(), id); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

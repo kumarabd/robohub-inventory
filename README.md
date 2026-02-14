@@ -18,6 +18,9 @@ Replace `kumarabd` with your GitHub username or organization.
 
 - HTTP server with graceful shutdown using chi router
 - PostgreSQL database with GORM ORM
+- **Automatic database migrations** with GORM AutoMigrate
+- **Auto-detection of breaking schema changes**
+- **Automatic seed data loading** for development
 - Domain-driven design architecture
 - RESTful API for inventory management
 - Docker and docker-compose support
@@ -57,14 +60,11 @@ The project follows Domain-Driven Design principles with the following structure
 
 ## Getting Started
 
-### Local Development
+### Quick Start
 
-1. Start PostgreSQL (using docker-compose):
-```bash
-make docker-compose-up
-```
+The service automatically handles database schema creation and migrations!
 
-Or manually:
+1. Start PostgreSQL:
 ```bash
 docker run -d \
   --name robohub-postgres \
@@ -75,30 +75,27 @@ docker run -d \
   postgres:15-alpine
 ```
 
-2. Install dependencies:
+2. Run the service (migrations happen automatically):
 ```bash
-make deps
+# First run - creates tables and loads seed data
+go run cmd/main.go
+
+# Or with fresh data every time
+FORCE_DROP_TABLES=true LOAD_SEED_DATA=true go run cmd/main.go
 ```
 
-3. Set environment variables (optional, defaults provided):
-```bash
-export DB_HOST=localhost
-export DB_PORT=5432
-export DB_USER=postgres
-export DB_PASSWORD=postgres
-export DB_NAME=robohub_inventory
-export PORT=8080
-```
+That's it! The service will:
+- ✅ Create all tables automatically
+- ✅ Apply schema changes
+- ✅ Load sample data (if tables are empty)
+- ✅ Detect and handle breaking changes
 
-4. Build the application:
-```bash
-make build
-```
+### Environment Variables for Migrations
 
-5. Run the application:
-```bash
-make run
-```
+- `FORCE_DROP_TABLES=true` - Drop and recreate all tables (⚠️ deletes data!)
+- `LOAD_SEED_DATA=true` - Load sample data for testing/development
+
+See [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md) for details.
 
 ### Using Docker Compose
 

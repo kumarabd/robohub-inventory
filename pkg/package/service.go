@@ -20,13 +20,13 @@ func NewService(repo Repository) *Service {
 }
 
 func (s *Service) CreatePackage(ctx context.Context, pkg *Package) error {
-	if pkg.Name == "" || pkg.Version == "" {
+	if pkg.Name == "" {
 		return ErrInvalidPackage
 	}
 	return s.repo.Create(ctx, pkg)
 }
 
-func (s *Service) GetPackage(ctx context.Context, id uint) (*Package, error) {
+func (s *Service) GetPackage(ctx context.Context, id string) (*Package, error) {
 	pkg, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, ErrPackageNotFound
@@ -47,12 +47,12 @@ func (s *Service) ListPackages(ctx context.Context, limit, offset int) ([]*Packa
 }
 
 func (s *Service) UpdatePackage(ctx context.Context, pkg *Package) error {
-	if pkg.Name == "" || pkg.Version == "" {
+	if pkg.Name == "" {
 		return ErrInvalidPackage
 	}
 	return s.repo.Update(ctx, pkg)
 }
 
-func (s *Service) DeletePackage(ctx context.Context, id uint) error {
+func (s *Service) DeletePackage(ctx context.Context, id string) error {
 	return s.repo.Delete(ctx, id)
 }

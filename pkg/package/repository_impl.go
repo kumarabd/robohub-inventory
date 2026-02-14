@@ -10,7 +10,7 @@ type gormRepository struct {
 	db *gorm.DB
 }
 
-// NewRepository creates a new GORM-based repository
+// NewRepository creates a new GORM-based package repository
 func NewRepository(db *gorm.DB) Repository {
 	return &gormRepository{db: db}
 }
@@ -19,9 +19,9 @@ func (r *gormRepository) Create(ctx context.Context, pkg *Package) error {
 	return r.db.WithContext(ctx).Create(pkg).Error
 }
 
-func (r *gormRepository) GetByID(ctx context.Context, id uint) (*Package, error) {
+func (r *gormRepository) GetByID(ctx context.Context, id string) (*Package, error) {
 	var pkg Package
-	err := r.db.WithContext(ctx).First(&pkg, id).Error
+	err := r.db.WithContext(ctx).Where("id = ?", id).First(&pkg).Error
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func (r *gormRepository) List(ctx context.Context, limit, offset int) ([]*Packag
 	if offset > 0 {
 		query = query.Offset(offset)
 	}
-	err := query.Find(&packages).Error
+	err := query.Order("created_at DESC").Find(&packages).Error
 	return packages, err
 }
 
@@ -54,6 +54,6 @@ func (r *gormRepository) Update(ctx context.Context, pkg *Package) error {
 	return r.db.WithContext(ctx).Save(pkg).Error
 }
 
-func (r *gormRepository) Delete(ctx context.Context, id uint) error {
-	return r.db.WithContext(ctx).Delete(&Package{}, id).Error
+func (r *gormRepository) Delete(ctx context.Context, id string) error {
+	return r.db.WithContext(ctx).Where("id = ?", id).Delete(&Package{}).Error
 }

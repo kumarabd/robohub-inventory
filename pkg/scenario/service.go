@@ -26,7 +26,7 @@ func (s *Service) CreateScenario(ctx context.Context, scenario *Scenario) error 
 	return s.repo.Create(ctx, scenario)
 }
 
-func (s *Service) GetScenario(ctx context.Context, id uint) (*Scenario, error) {
+func (s *Service) GetScenario(ctx context.Context, id string) (*Scenario, error) {
 	scenario, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, ErrScenarioNotFound
@@ -53,6 +53,6 @@ func (s *Service) UpdateScenario(ctx context.Context, scenario *Scenario) error 
 	return s.repo.Update(ctx, scenario)
 }
 
-func (s *Service) DeleteScenario(ctx context.Context, id uint) error {
+func (s *Service) DeleteScenario(ctx context.Context, id string) error {
 	return s.repo.Delete(ctx, id)
 }

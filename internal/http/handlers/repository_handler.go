@@ -35,14 +35,13 @@ func (h *RepositoryHandler) CreateRepository(w http.ResponseWriter, r *http.Requ
 }
 
 func (h *RepositoryHandler) GetRepository(w http.ResponseWriter, r *http.Request) {
-	idStr := chi.URLParam(r, "id")
-	id, err := strconv.ParseUint(idStr, 10, 32)
-	if err != nil {
+	id := chi.URLParam(r, "id")
+	if id == "" {
 		http.Error(w, "Invalid ID", http.StatusBadRequest)
 		return
 	}
 
-	repo, err := h.service.GetRepository(r.Context(), uint(id))
+	repo, err := h.service.GetRepository(r.Context(), id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
@@ -71,9 +70,8 @@ func (h *RepositoryHandler) ListRepositories(w http.ResponseWriter, r *http.Requ
 }
 
 func (h *RepositoryHandler) UpdateRepository(w http.ResponseWriter, r *http.Request) {
-	idStr := chi.URLParam(r, "id")
-	id, err := strconv.ParseUint(idStr, 10, 32)
-	if err != nil {
+	id := chi.URLParam(r, "id")
+	if id == "" {
 		http.Error(w, "Invalid ID", http.StatusBadRequest)
 		return
 	}
@@ -84,7 +82,7 @@ func (h *RepositoryHandler) UpdateRepository(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	repo.ID = uint(id)
+	repo.ID = id
 	if err := h.service.UpdateRepository(r.Context(), &repo); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -95,14 +93,13 @@ func (h *RepositoryHandler) UpdateRepository(w http.ResponseWriter, r *http.Requ
 }
 
 func (h *RepositoryHandler) DeleteRepository(w http.ResponseWriter, r *http.Request) {
-	idStr := chi.URLParam(r, "id")
-	id, err := strconv.ParseUint(idStr, 10, 32)
-	if err != nil {
+	id := chi.URLParam(r, "id")
+	if id == "" {
 		http.Error(w, "Invalid ID", http.StatusBadRequest)
 		return
 	}
 
-	if err := h.service.DeleteRepository(r.Context(), uint(id)); err != nil {
+	if err := h.service.DeleteRepository(r.Context(), id); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
