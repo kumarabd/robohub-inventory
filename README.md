@@ -1,6 +1,18 @@
 # RoboHub Inventory Service
 
+![Docker Build](https://github.com/kumarabd/robohub-inventory/actions/workflows/docker-publish.yml/badge.svg)
+
 A Golang microservice for managing inventory in the RoboHub robotics development platform. This service manages packages, repositories, scenarios, datasets, and simulators.
+
+## Docker Images
+
+Pre-built Docker images are available on GitHub Container Registry:
+
+```bash
+docker pull ghcr.io/kumarabd/robohub-inventory:latest
+```
+
+Replace `kumarabd` with your GitHub username or organization.
 
 ## Features
 
@@ -9,6 +21,8 @@ A Golang microservice for managing inventory in the RoboHub robotics development
 - Domain-driven design architecture
 - RESTful API for inventory management
 - Docker and docker-compose support
+- Automated CI/CD with GitHub Actions
+- Multi-platform Docker images (amd64, arm64)
 - Health check endpoint
 - Structured logging
 - Metrics collection
@@ -102,6 +116,34 @@ make docker-compose-down
 ```bash
 docker-compose logs -f app
 ```
+
+### Using Pre-built Docker Images
+
+Pull and run the latest image from GitHub Container Registry:
+
+```bash
+# Pull the image
+docker pull ghcr.io/kumarabd/robohub-inventory:latest
+
+# Run with docker-compose or standalone
+docker run -p 8080:8080 \
+  -e DB_HOST=your-db-host \
+  -e DB_USER=postgres \
+  -e DB_PASSWORD=your-password \
+  -e DB_NAME=robohub_inventory \
+  ghcr.io/kumarabd/robohub-inventory:latest
+```
+
+## CI/CD Pipeline
+
+This project includes automated CI/CD workflows using GitHub Actions:
+
+- **Automatic builds**: Docker images are automatically built and published on every push to `main`/`develop` branches
+- **Release tags**: Create a git tag (e.g., `v1.0.0`) to publish versioned releases
+- **Multi-platform**: Images are built for both `linux/amd64` and `linux/arm64`
+- **Manual builds**: Trigger custom builds via GitHub Actions UI
+
+See [`.github/workflows/README.md`](.github/workflows/README.md) for detailed documentation.
 
 ## API Endpoints
 
